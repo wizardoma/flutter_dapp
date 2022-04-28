@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterdapp/models.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,7 +10,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _balance = 0;
+  var _data;
+  EthereumUtils ethereumUtils = EthereumUtils();
+
   TextEditingController amountController = TextEditingController();
+
+  initState(){
+    super.initState();
+    ethereumUtils.initial();
+    ethereumUtils.getBalance().then((v) {
+      setState(() {
+        _data = v;
+      });
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 40
                   ),),
                   const SizedBox(height: 20,),
-                  Text(_balance.toString(), style: const TextStyle(
+                 _data == null ? const CircularProgressIndicator(): Text(_data.toString(), style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 30
@@ -46,6 +63,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20,),
             TextField(
              controller: amountController,
+              keyboardType: TextInputType.number,
 
             ),
             const SizedBox(height: 20,),
@@ -73,14 +91,45 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getBalance() {
+    setState(() {
+      _data = null;
 
+    });
+    ethereumUtils.getBalance().then((value) {
+      setState(() {
+        _data = value;
+
+      });
+    });
   }
 
   void send() {
+    if (amountController.text.isEmpty){
+      showSnackBar("You must specify a number");
+      return;
+    }
+    ethereumUtils.send(int.parse(amountController.text)).then((value){
+      showSnackBar(value);
+      getBalance();
+    },
+    );
 
   }
 
   void withdraw() {
+    if (amountController.text.isEmpty){
+      showSnackBar("You must specify a number");
+      return;
+    }
+    ethereumUtils.withdraw(int.parse(amountController.text)).then((value){
+      showSnackBar(value);
+      getBalance();
+    },
+    );
+  }
+
+  showSnackBar(String message){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 
   }
 }

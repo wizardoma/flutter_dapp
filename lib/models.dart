@@ -32,7 +32,7 @@ class EthereumUtils {
     final result = await web3client.sendTransaction(privateKeyCred,
         Transaction.callContract(
           contract: contract, function: etherFunction, parameters: [bigAmount],
-          maxGas: 100000,
+          maxGas: 300000,
         ), chainId: 4,
         fetchChainIdFromNetworkId: false
     );
@@ -49,7 +49,7 @@ class EthereumUtils {
     final result = await web3client.sendTransaction(privateKeyCred,
         Transaction.callContract(
           contract: contract, function: etherFunction, parameters: [bigAmount],
-          maxGas: 100000,
+          maxGas: 300000,
         ), chainId: 4,
         fetchChainIdFromNetworkId: false
     );
